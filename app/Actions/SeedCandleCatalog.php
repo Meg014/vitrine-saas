@@ -3,6 +3,8 @@
 namespace App\Actions;
 
 use App\Enums\AttributeDisplayType;
+use App\Enums\ProductStatus;
+use App\Enums\ProductType;
 use App\Models\Store;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -22,6 +24,14 @@ class SeedCandleCatalog
                 foreach ($values as $i => $value) {
                     $attribute->values()->firstOrCreate(['name' => $value], ['color_hex' => $colors[$value] ?? null, 'sort_order' => $i]);
                 }
+            }
+            $category = $store->categories()->where('slug', 'velas-aromaticas')->first() ?? $store->categories()->first();
+            foreach ([
+                ['Vela de Lavanda', 'vela-lavanda', 4990, 3990, 'VELA-LAV', true],
+                ['Vela de Baunilha', 'vela-baunilha', 4590, null, 'VELA-BAU', false],
+                ['Kit Presente Aromático', 'kit-presente-aromatico', 8990, 7990, 'KIT-ARO', true],
+            ] as [$name, $slug, $price, $promo, $sku, $featured]) {
+                $store->products()->firstOrCreate(['slug' => $slug], ['category_id' => $category?->id, 'name' => $name, 'short_description' => 'Produzida artesanalmente para tornar seus momentos mais acolhedores.', 'status' => ProductStatus::Active, 'product_type' => ProductType::Simple, 'base_price' => $price, 'promotional_price' => $promo, 'sku' => $sku, 'stock_quantity' => 20, 'is_featured' => $featured, 'published_at' => now()]);
             }
         });
     }

@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Middleware\AuthenticateCustomer;
 use App\Http\Middleware\EnsureUserBelongsToCurrentStore;
+use App\Http\Middleware\ResolvePublicStore;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'store.member' => EnsureUserBelongsToCurrentStore::class,
+            'public.store' => ResolvePublicStore::class,
+            'customer.auth' => AuthenticateCustomer::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

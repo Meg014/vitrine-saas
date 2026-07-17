@@ -85,3 +85,19 @@ Clientes são consumidores da loja e não usuários do painel. E-mail e CPF são
 Cada cliente pode ter vários endereços, mas `SaveCustomerAddress` mantém somente um padrão em transação. Mensagens podem pertencer a visitantes ou clientes cadastrados e só podem ser atribuídas a membros da mesma loja. A abertura registra leitura; respostas externas registram `replied_at`, enquanto anotações internas não alteram esse campo.
 
 `CreateCustomerFromMessage` reutiliza o cliente com o mesmo e-mail na loja ou cria um novo de forma transacional. Mensagens e respostas não possuem ações comuns de exclusão, e replies são imutáveis pelas policies.
+
+## Loja pública e carrinho
+
+A vitrine usa `/loja/{slug}` e resolve somente lojas ativas por `PublicStoreContext`, separado do `CurrentStore` do painel. O contexto fica associado à sessão pública para sustentar as requisições Livewire e está preparado para uma futura resolução por host.
+
+Clientes usam o guard `customer`, independente do guard `web` dos lojistas. Login e cadastro sempre combinam loja e e-mail; clientes bloqueados não autenticam. As páginas privadas são `/minha-conta`, `/meus-enderecos` e o placeholder de checkout.
+
+Carrinhos de visitantes usam a sessão e carrinhos autenticados usam `customer_id`. No login/cadastro, itens são mesclados por produto/variação até o estoque disponível. Preço e disponibilidade são sempre recalculados no servidor; adicionar ao carrinho não reserva nem reduz estoque.
+
+Para carregar categorias, atributos e produtos demonstrativos numa loja escolhida conscientemente:
+
+```php
+app(\App\Actions\SeedCandleCatalog::class)->handle(\App\Models\Store::findOrFail(1));
+```
+
+Pedidos definitivos, checkout real, cálculo de frete e pagamentos ainda não estão implementados.

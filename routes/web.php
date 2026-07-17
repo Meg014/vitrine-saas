@@ -2,12 +2,33 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PublicStoreController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/painel');
+
+Route::prefix('loja/{store:slug}')->middleware('public.store')->name('store.')->group(function (): void {
+    Route::get('/', [PublicStoreController::class, 'home'])->name('home');
+    Route::get('/produtos', [PublicStoreController::class, 'catalog'])->name('catalog');
+    Route::get('/produto/{product:slug}', [PublicStoreController::class, 'product'])->name('product');
+    Route::get('/categoria/{category:slug}', [PublicStoreController::class, 'category'])->name('category');
+    Route::get('/carrinho', [PublicStoreController::class, 'cart'])->name('cart');
+    Route::get('/contato', [PublicStoreController::class, 'contact'])->middleware('throttle:30,1')->name('contact');
+    Route::get('/entrar', [PublicStoreController::class, 'login'])->name('login');
+    Route::post('/entrar', [CustomerAuthController::class, 'login'])->middleware('throttle:5,1')->name('login.submit');
+    Route::get('/cadastro', [PublicStoreController::class, 'register'])->name('register');
+    Route::post('/cadastro', [CustomerAuthController::class, 'register'])->middleware('throttle:5,1')->name('register.submit');
+    Route::middleware('customer.auth')->group(function (): void {
+        Route::get('/minha-conta', [PublicStoreController::class, 'account'])->name('account');
+        Route::get('/meus-enderecos', [PublicStoreController::class, 'addresses'])->name('addresses');
+        Route::get('/checkout', [PublicStoreController::class, 'checkout'])->name('checkout');
+        Route::post('/sair', [CustomerAuthController::class, 'logout'])->name('logout');
+    });
+});
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthController::class, 'login'])->name('login');

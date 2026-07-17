@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['customer_id', 'name', 'email', 'phone', 'subject', 'message', 'status', 'source', 'read_at', 'replied_at', 'assigned_user_id'])]
+#[Fillable(['customer_id', 'product_id', 'name', 'email', 'phone', 'subject', 'message', 'status', 'source', 'read_at', 'replied_at', 'assigned_user_id'])]
 class CustomerMessage extends Model
 {
     use HasFactory;
@@ -38,5 +38,10 @@ class CustomerMessage extends Model
     public function replies(): HasMany
     {
         return $this->hasMany(CustomerMessageReply::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 }
