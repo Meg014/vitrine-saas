@@ -100,4 +100,8 @@ Para carregar categorias, atributos e produtos demonstrativos numa loja escolhid
 app(\App\Actions\SeedCandleCatalog::class)->handle(\App\Models\Store::findOrFail(1));
 ```
 
-Pedidos definitivos, checkout real, cálculo de frete e pagamentos ainda não estão implementados.
+## Checkout e pedidos
+
+O checkout autenticado oferece retirada, entrega local ou envio conforme as configurações da loja, além de PIX, transferência, pagamento na retirada e dinheiro na entrega. Taxas e pedido mínimo são validados no servidor. Esta etapa não coleta cartão e não integra gateways ou transportadoras.
+
+`CreateOrder` recalcula preço e estoque em transação, reserva uma sequência atômica por loja, grava snapshots e converte o carrinho. O `checkout_token` torna reenvios idempotentes. Cancelamentos aceitos devolvem estoque uma única vez e toda mudança fica no histórico. A gestão fica em `/painel/pedidos` e as opções em `/painel/configuracoes/pedidos`.

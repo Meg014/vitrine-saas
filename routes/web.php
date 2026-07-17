@@ -5,6 +5,7 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PublicStoreController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,9 @@ Route::prefix('loja/{store:slug}')->middleware('public.store')->name('store.')->
         Route::get('/minha-conta', [PublicStoreController::class, 'account'])->name('account');
         Route::get('/meus-enderecos', [PublicStoreController::class, 'addresses'])->name('addresses');
         Route::get('/checkout', [PublicStoreController::class, 'checkout'])->name('checkout');
+        Route::get('/checkout/sucesso/{order}', [PublicStoreController::class, 'orderSuccess'])->name('order.success');
+        Route::get('/minha-conta/pedidos', [PublicStoreController::class, 'orders'])->name('orders');
+        Route::get('/minha-conta/pedidos/{order}', [PublicStoreController::class, 'order'])->name('orders.show');
         Route::post('/sair', [CustomerAuthController::class, 'logout'])->name('logout');
     });
 });
@@ -58,8 +62,11 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/painel/clientes/{customer}/editar', [CustomerController::class, 'edit'])->name('customers.edit');
         Route::get('/painel/mensagens', [CustomerController::class, 'messages'])->name('messages.index');
         Route::get('/painel/mensagens/{customerMessage}', [CustomerController::class, 'message'])->name('messages.show');
+        Route::get('/painel/pedidos', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/painel/pedidos/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::get('/painel/configuracoes/pedidos', [OrderController::class, 'settings'])->name('orders.settings');
         Route::get('/painel/{page}', [DashboardController::class, 'page'])
-            ->whereIn('page', ['pedidos', 'aparencia', 'configuracoes', 'equipe'])
+            ->whereIn('page', ['aparencia', 'configuracoes', 'equipe'])
             ->name('panel.page');
     });
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\Store;
 use Illuminate\View\View;
@@ -70,6 +71,23 @@ class PublicStoreController extends Controller
 
     public function checkout(Store $store): View
     {
-        return $this->page($store, 'storefront.checkout-placeholder');
+        return $this->page($store, 'storefront.checkout');
+    }
+
+    public function orders(Store $store): View
+    {
+        return $this->page($store, 'storefront.customer-orders');
+    }
+
+    public function order(Store $store, Order $order): View
+    {
+        return $this->page($store, 'storefront.customer-order-details', compact('order'));
+    }
+
+    public function orderSuccess(Store $store, Order $order): View
+    {
+        abort_unless($order->store_id === $store->id && $order->customer_id === auth('customer')->id(), 404);
+
+        return $this->page($store, 'storefront.customer-order-details', compact('order'));
     }
 }

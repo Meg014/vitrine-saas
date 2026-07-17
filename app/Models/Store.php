@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['name', 'slug', 'description', 'email', 'phone', 'document', 'status', 'logo_path'])]
+#[Fillable(['name', 'slug', 'description', 'email', 'phone', 'document', 'status', 'logo_path', 'next_order_number'])]
 class Store extends Model
 {
     use HasFactory;
@@ -63,5 +63,10 @@ class Store extends Model
     public function carts(): HasMany
     {
         return $this->hasMany(Cart::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
     }
 }
