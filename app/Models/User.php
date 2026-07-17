@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -23,6 +24,16 @@ class User extends Authenticatable
         return $this->belongsToMany(Store::class)
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    public function assignedCustomerMessages(): HasMany
+    {
+        return $this->hasMany(CustomerMessage::class, 'assigned_user_id');
+    }
+
+    public function customerMessageReplies(): HasMany
+    {
+        return $this->hasMany(CustomerMessageReply::class);
     }
 
     /**

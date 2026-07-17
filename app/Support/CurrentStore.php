@@ -22,6 +22,11 @@ class CurrentStore
         return $id ? $this->resolved = Store::with('settings')->find($id) : null;
     }
 
+    public function getOrFail(): Store
+    {
+        return $this->get() ?? throw new \RuntimeException('Nenhuma loja atual foi selecionada.');
+    }
+
     public function set(Store $store): void
     {
         $this->session->put('current_store_id', $store->getKey());

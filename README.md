@@ -1,6 +1,6 @@
 # Vitrine SaaS
 
-Fundação de uma plataforma SaaS multiloja em Laravel 13. Esta etapa inclui autenticação, onboarding da primeira loja, seleção segura da loja atual e painel responsivo. Produtos, pedidos, pagamentos, frete e loja pública ainda não fazem parte do escopo.
+Plataforma SaaS multiloja em Laravel 13. Inclui autenticação, catálogo privado, estoque, clientes, endereços e atendimento por mensagens internas. Pedidos, pagamentos, frete e loja pública ainda não fazem parte do escopo.
 
 ## Requisitos
 
@@ -63,3 +63,25 @@ Use `php artisan route:list` para consultar as rotas nomeadas. A suíte cobre au
 ```bash
 php artisan test
 ```
+
+## Catálogo e estoque
+
+Todas as entidades comerciais são vinculadas explicitamente à loja atual. Categorias, produtos e atributos possuem unicidade composta por loja; IDs relacionados são revalidados contra `CurrentStore`. Valores monetários são inteiros em centavos, peso usa gramas e dimensões usam milímetros.
+
+Produtos variáveis associam atributos genéricos e valores por tabelas intermediárias. `GenerateVariantCombinations` calcula o produto cartesiano com limite de 100 combinações e chave canônica que impede duplicidade. `AdjustInventory` bloqueia estoque negativo e registra o histórico na mesma transação.
+
+Uploads usam o disco `public`, nomes aleatórios do Laravel Storage, até 10 imagens JPEG/PNG/WebP de 5 MB. Execute `php artisan storage:link` no primeiro setup.
+
+Os dados demonstrativos não rodam em migrations. Para uma loja escolhida conscientemente, use no Tinker:
+
+```php
+app(\App\Actions\SeedCandleCatalog::class)->handle(\App\Models\Store::findOrFail(1));
+```
+
+## Clientes e mensagens
+
+Clientes são consumidores da loja e não usuários do painel. E-mail e CPF são únicos apenas dentro da loja; e-mail é normalizado para minúsculas e telefone, CPF e CEP são persistidos somente com dígitos. O dashboard usa contagens reais de clientes, mensagens e produtos, mantendo vendas e pedidos identificados como demonstrativos.
+
+Cada cliente pode ter vários endereços, mas `SaveCustomerAddress` mantém somente um padrão em transação. Mensagens podem pertencer a visitantes ou clientes cadastrados e só podem ser atribuídas a membros da mesma loja. A abertura registra leitura; respostas externas registram `replied_at`, enquanto anotações internas não alteram esse campo.
+
+`CreateCustomerFromMessage` reutiliza o cliente com o mesmo e-mail na loja ou cria um novo de forma transacional. Mensagens e respostas não possuem ações comuns de exclusão, e replies são imutáveis pelas policies.

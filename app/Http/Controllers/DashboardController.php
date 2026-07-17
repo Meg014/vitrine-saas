@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
+use App\Models\CustomerMessage;
+use App\Models\Product;
 use App\Support\CurrentStore;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -10,9 +13,17 @@ class DashboardController extends Controller
 {
     public function index(Request $request, CurrentStore $currentStore): View
     {
+        $store = $currentStore->getOrFail();
+
         return view('dashboard', [
-            'currentStore' => $currentStore->get(),
+            'currentStore' => $store,
             'stores' => $request->user()->stores()->orderBy('name')->get(),
+            'realMetrics' => [
+                'activeCustomers' => Customer::where('store_id', $store->id)->where('status', 'active')->count(),
+                'newCustomers' => Customer::where('store_id', $store->id)->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
+                'newMessages' => CustomerMessage::where('store_id', $store->id)->where('status', 'new')->count(),
+                'activeProducts' => Product::where('store_id', $store->id)->where('status', 'active')->count(),
+            ],
         ]);
     }
 
