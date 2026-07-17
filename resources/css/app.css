@@ -1,0 +1,20 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+    body { @apply bg-slate-50 text-slate-900 antialiased; }
+    input, textarea, select { @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100; }
+    label { @apply mb-2 block text-sm font-semibold text-slate-700; }
+}
+
+@layer components {
+    .btn-primary { @apply inline-flex min-h-11 items-center justify-center rounded-xl bg-violet-600 px-5 py-2.5 font-semibold text-white shadow-sm transition hover:bg-violet-700 focus:ring-4 focus:ring-violet-200; }
+    .nav-link { @apply flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white; }
+    .nav-link-active { @apply bg-white/10 text-white; }
+}
